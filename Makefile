@@ -1,14 +1,15 @@
-TARGETS = btb-timing
+TARGETS = btb-timing btb-timing-with
 CFLAGS += -I.
 
 all: $(TARGETS)
 
+%-with: %.c
+	$(CC) $(CFLAGS) -DIBPB $< -o $@
+
 test: $(TARGETS)
 	for t in $(TARGETS); do \
-		echo $$t:; \
 		./$$t; \
 	done
-
 
 clean:
 	rm -f $(TARGETS)

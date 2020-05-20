@@ -2,6 +2,7 @@
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/version.h>
+#include <asm/microcode.h>
 #include "cool_header.h"
 
 
@@ -23,16 +24,17 @@ static long device_ioctl(struct file *file, unsigned int ioctl_num, unsigned lon
   switch (ioctl_num) {
     case COOL_IOCTL_CMD_BTBF:
     {
-        native_wrmsrl((0x49), (unsigned long)(0x1));
-        // asm volatile("wrmsr;"
-        //             :
-        //             : "a" (0x49)
-        //             , "c" (0x1)
-        //             , "d" ((uint32_t)0));
+        // native_wrmsrl((0x49), (unsigned long)(0x1));
+        asm volatile("wrmsr;"
+                    :
+                    : "a" (0x1)
+                    , "c" (0x49)
+                    , "d" ((uint32_t)0));
         return 0;
     }
 
     default:
+
         return -1;
   }
 

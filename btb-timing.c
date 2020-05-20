@@ -18,8 +18,6 @@ typedef unsigned long long CYCLES;
 #define END_TIMER(name) getCCP(t_end_##name)
 #define SPEND_TIME(name) (t_end_##name - t_start_##name)
 
-#define ITERATIONS 10000
-
 int empty (int arg) {
     int a = 5;
     return a + arg;
@@ -42,7 +40,7 @@ int main(int argc, char const *argv[])
 #endif
 
     // train btb
-    for(i = 0; i < 10000; i++) {
+    for(i = 0; i < TRAINING_ITERATIONS; i++) {
         dump = fct(dump);
     }
 
@@ -61,11 +59,11 @@ int main(int argc, char const *argv[])
         sum += SPEND_TIME(jmp);
     }
 
-#ifndef IBPB
+#ifdef IBPB
+    printf("with IBPB \t\t %lld \t %f\n", sum, ((float) sum) / ITERATIONS);
+#else
     printf("%d ITERATIONS \t sum \t\t avg\n", ITERATIONS);
     printf("wo IBPB \t\t %lld \t %f\n", sum, ((float) sum) / ITERATIONS);
-#else
-    printf("with IBPB \t\t %lld \t %f\n", sum, ((float) sum) / ITERATIONS);
 #endif
 
 #ifdef IBPB

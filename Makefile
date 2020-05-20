@@ -1,5 +1,5 @@
 TARGETS = btb-timing btb-timing-with
-CFLAGS += -I.
+CFLAGS += -I. -DITERATIONS=100000 -DTRAINING_ITERATIONS=100000
 
 all: $(TARGETS)
 

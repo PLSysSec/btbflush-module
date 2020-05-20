@@ -18,7 +18,7 @@ typedef unsigned long long CYCLES;
 #define END_TIMER(name) getCCP(t_end_##name)
 #define SPEND_TIME(name) (t_end_##name - t_start_##name)
 
-int empty (int arg) {
+int __attribute__ ((noinline)) empty (int arg) {
     int a = 5;
     return a + arg;
 }

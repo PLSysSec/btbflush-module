@@ -23,8 +23,13 @@ int __attribute__ ((noinline)) empty (int arg) {
     return a + arg;
 }
 
+void warmup(){
+    for(int i = 0; i < 10000000; i++);
+}
+
 int main(int argc, char const *argv[])
 {
+    warmup();
     int i = 0;
     int (*fct) () = empty;
     INIT_TIMER(jmp);

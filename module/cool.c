@@ -25,11 +25,6 @@ static long device_ioctl(struct file *file, unsigned int ioctl_num, unsigned lon
     case COOL_IOCTL_CMD_BTBF:
     {
         native_wrmsrl((0x49), (unsigned long)(0x1));
-        // asm volatile("wrmsr;"
-        //             :
-        //             : "a" (0x49)
-        //             , "c" (0x1)
-        //             , "d" ((uint32_t)0));
         return 0;
     }
 

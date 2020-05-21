@@ -18,23 +18,35 @@ typedef unsigned long long CYCLES;
 #define END_TIMER(name) getCCP(t_end_##name)
 #define SPEND_TIME(name) (t_end_##name - t_start_##name)
 
-int __attribute__ ((noinline)) empty (int arg) {
-    int a = 5;
-    return a + arg;
-}
+typedef int (*fct_t)(int);
 
+fct_t fct = NULL;
+
+int __attribute__ ((noinline)) empty (int it) {
+    if(it-1 == 0)
+        return 5;
+    else
+        return fct(it-1);
+}
 void warmup(){
     for(int i = 0; i < 10000000; i++);
 }
 
 int main(int argc, char const *argv[])
 {
+    fct = empty;
     warmup();
     int i = 0;
-    int (*fct) () = empty;
     INIT_TIMER(jmp);
     unsigned long long sum = 0;
-    int dump = 0;
+    int indirect_jumps = 0;
+
+    if(argc < 2) {
+        printf("too few arguments.\nUsage:\n\t%s <num indrect jumps per iteration>\n", argv[0]);
+        exit(1);
+    }
+
+    indirect_jumps = atoi(argv[1]);
 
 #ifdef IBPB
     int btbf = open(COOL_DEVICE_PATH, 0);
@@ -46,7 +58,7 @@ int main(int argc, char const *argv[])
 
     // train btb
     for(i = 0; i < TRAINING_ITERATIONS; i++) {
-        dump = fct(dump);
+        fct(indirect_jumps);
     }
 
     // in a loop btb-flush, then measure the call/jmp
@@ -59,16 +71,15 @@ int main(int argc, char const *argv[])
 #endif
 
         START_TIMER(jmp);
-        dump = fct(dump);
+        fct(indirect_jumps);
         END_TIMER(jmp);
         sum += SPEND_TIME(jmp);
     }
 
 #ifdef IBPB
-    printf("with IBPB \t\t %lld \t %f\n", sum, ((float) sum) / ITERATIONS);
+    printf("with IBPB \t\t %d \t %lld \t %f\n", indirect_jumps, sum, ((float) sum) / ITERATIONS);
 #else
-    printf("%d ITERATIONS \t sum \t\t avg\n", ITERATIONS);
-    printf("wo IBPB \t\t %lld \t %f\n", sum, ((float) sum) / ITERATIONS);
+    printf("wo IBPB \t\t %d \t %lld \t %f\n", indirect_jumps, sum, ((float) sum) / ITERATIONS);
 #endif
 
 #ifdef IBPB

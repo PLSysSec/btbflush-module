@@ -1,5 +1,7 @@
 TARGETS = btb-timing btb-timing-with
-CFLAGS += -I. -DITERATIONS=100000000 -DTRAINING_ITERATIONS=100000000 -O0
+ITERATIONS=10000000
+CFLAGS += -I. -DITERATIONS=$(ITERATIONS) -DTRAINING_ITERATIONS=10000000 -O1
+NUM_JUMPS=1 10 20 50 100
 
 all: $(TARGETS)
 
@@ -7,8 +9,11 @@ all: $(TARGETS)
 	$(CC) $(CFLAGS) -DIBPB $< -o $@
 
 test: $(TARGETS)
-	for t in $(TARGETS); do \
-		./$$t; \
+	echo  "$(ITERATIONS) \t\t jumps \t sum \t\t avg"
+	for j in $(NUM_JUMPS); do \
+		for t in $(TARGETS); do \
+			./$$t $$j; \
+		done \
 	done
 
 clean:
